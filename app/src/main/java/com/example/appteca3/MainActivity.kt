@@ -1,51 +1,47 @@
 package com.example.appteca3
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.core.widget.addTextChangedListener
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.appteca3.ui.theme.AppTeca3Theme
 
-class MainActivity : AppCompatActivity() {
-    private val vm: AppTecaViewModel by viewModels()
-    private lateinit var adapter: AppAdapter
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        adapter = AppAdapter(emptyList(),
-            onAppClick = { app ->
-                val intent = Intent(this, DetalleActivity::class.java)
-                intent.putExtra("appId", app.id)
-                startActivity(intent)
-            },
-            onFavoritoClick = { app -> vm.alternarFavorita(app) })
-        val rv = findViewById<RecyclerView>(R.id.rvApps)
-        rv.layoutManager = LinearLayoutManager(this)
-        rv.adapter = adapter
-        findViewById<EditText>(R.id.etBuscar).addTextChangedListener { texto ->
-            vm.buscar(texto.toString())
-        }
-        findViewById<Button>(R.id.btnSoloFav).setOnClickListener {
-            vm.alternarModo()
-        }
-        // ── LAS suscripciones: el único lugar donde el estado toca la pantalla
-        vm.listaVisible.observe(this) { lista ->
-            adapter.actualizarLista(lista)
-        }
-        vm.modoSoloFavoritas.observe(this) { activo ->
-            findViewById<Button>(R.id.btnSoloFav).text =
-                if (activo) " Solo favoritas" else "☆ Todas"
+        enableEdgeToEdge()
+        setContent {
+            AppTeca3Theme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
         }
     }
-    override fun onResume() {
-        super.onResume()
-        vm.refrescar()
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    AppTeca3Theme {
+        Greeting("Android")
     }
 }
