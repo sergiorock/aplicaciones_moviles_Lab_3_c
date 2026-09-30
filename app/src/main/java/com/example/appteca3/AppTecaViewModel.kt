@@ -4,6 +4,11 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 class AppTecaViewModel : ViewModel() {
+    private val _appSeleccionada = MutableStateFlow<App?>(null)
+    val appSeleccionada: StateFlow<App?> = _appSeleccionada
+    fun seleccionar(app: App) { _appSeleccionada.value = app }
+    fun volverALista() { _appSeleccionada.value = null }
+
     private var query = ""
     private var soloFavoritas = false
     // ── ANTES (3B): MutableLiveData<List<App>>() / LiveData<List<App>>
@@ -41,6 +46,9 @@ class AppTecaViewModel : ViewModel() {
         if (soloFavoritas) lista = lista.filter { it.esFavorita }
         _listaVisible.value = lista
         _modoSoloFavoritas.value = soloFavoritas
+        _appSeleccionada.value = _appSeleccionada.value?.let { sel ->
+            Catalogo.apps.find { it.id == sel.id }
+        }
     }
     override fun onCleared() {
         Log.d("VIDA", "ViewModel → onCleared")
